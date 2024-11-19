@@ -3,66 +3,9 @@ import codecs
 from typing import Union
 from uuid import UUID
 
-from construct import Struct, Int32ul, Int16ul, Array, this, Bytes, Padded, Switch, Int32ub, Const, Container, FixedSized, Adapter, ConstructError
+from construct import Struct, Int32ul, Int16ul, Array, this, Bytes, PaddedString, Switch, Int32ub, Const, Container
 
 from pyplayready.wrmheader import WRMHeader
-
-def encodingunit(encoding):
-    """Determine the size of an encoding unit."""
-    return {
-        "utf8": 1,
-        "utf16": 2,
-        "utf32": 4,
-        "ascii": 1
-    }.get(encoding, 1)
-
-class NullStripped(Adapter):
-    """Strips null bytes on parsing, pads null bytes on building."""
-    def __init__(self, subcon, pad):
-        super().__init__(subcon)
-        self.pad = pad
-
-    def _decode(self, obj, context, path):
-        return obj.rstrip(b"\x00")
-
-    def _encode(self, obj, context, path):
-        if len(obj) > self.subcon.size:
-            raise ConstructError("Encoded string is larger than specified length")
-        return obj.ljust(self.subcon.size, b"\x00")
-
-class StringEncoded(Adapter):
-    """Encodes/decodes a string using the specified encoding."""
-    def __init__(self, subcon, encoding):
-        super().__init__(subcon)
-        self.encoding = encoding
-
-    def _decode(self, obj, context, path):
-        return obj.decode(self.encoding)
-
-    def _encode(self, obj, context, path):
-        if not isinstance(obj, str):
-            raise ConstructError("Object is not a string")
-        return obj.encode(self.encoding)
-
-def PaddedStringFake(length, encoding):
-    """
-    Configurable, fixed-length or variable-length string field.
-
-    :param length: integer, length in bytes
-    :param encoding: string, encoding type like 'utf8', 'utf16', 'utf32', or 'ascii'
-    """
-    encoding_unit_size = encodingunit(encoding)
-    return StringEncoded(
-        FixedSized(
-            length,
-            NullStripped(
-                Bytes(length),
-                pad=encoding_unit_size
-            )
-        ),
-        encoding
-    )
-
     
 class _PlayreadyPSSHStructs:
     PSSHBox = Struct(
@@ -80,7 +23,7 @@ class _PlayreadyPSSHStructs:
         "data" / Switch(
             this.type,
             {
-                1: PaddedStringFake(this.length, "utf16")
+                1: PaddedString(this.length, "utf16")
             },
             default=Bytes(this.length)
         )
