@@ -3,7 +3,7 @@ import codecs
 from typing import Union
 from uuid import UUID
 
-from construct import Struct, Int32ul, Int16ul, Array, this, Bytes, PaddedString, Switch, Int32ub, Const, Container
+from construct import Struct, Int32ul, Int16ul, Array, this, Bytes, String, Switch, Int32ub, Const, Container
 
 from pyplayready.wrmheader import WRMHeader
     
@@ -23,7 +23,7 @@ class _PlayreadyPSSHStructs:
         "data" / Switch(
             this.type,
             {
-                1: PaddedString(this.length, "utf16")
+                1: String(this.length, "utf16")
             },
             default=Bytes(this.length)
         )
