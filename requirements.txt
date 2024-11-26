@@ -1,7 +1,6 @@
 requests
 pycryptodome
 ecpy
-construct
 click
 PyYAML
 aiohttp

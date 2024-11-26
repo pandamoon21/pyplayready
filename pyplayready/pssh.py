@@ -3,7 +3,7 @@ import codecs
 from typing import Union
 from uuid import UUID
 
-from construct import Struct, Int32ul, Int16ul, Array, this, Bytes, PaddedString, Switch, Int32ub, Const, Container
+from .construct import Struct, Int32ul, Int16ul, Array, this, Bytes, PaddedString, Switch, Int32ub, Const, Container
 
 from pyplayready.wrmheader import WRMHeader
     

@@ -5,7 +5,7 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Union, Any
 
-from construct import Struct, Const, Int8ub, Bytes, this, Int32ub
+from .construct import Struct, Const, Int8ub, Bytes, this, Int32ub
 
 from pyplayready.bcert import CertificateChain
 from pyplayready.ecc_key import ECCKey
